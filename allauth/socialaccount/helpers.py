@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.db.models import FieldDoesNotExist
 from django.shortcuts import render_to_response, render
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -11,6 +10,7 @@ from allauth.utils import (generate_unique_username, email_address_exists,
                            get_user_model)
 from allauth.account.utils import (send_email_confirmation, 
                                    perform_login, complete_signup,
+                                   user_field,
                                    user_email, user_username)
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter as get_account_adapter
@@ -67,19 +67,12 @@ def _process_signup(request, sociallogin):
                           generate_unique_username(user_username(u)
                                                    or email
                                                    or 'user'))
-
-        try:
-            max_length = User._meta.get_field('last_name').max_length
-            u.last_name = (u.last_name or '')[0:max_length]
-        except FieldDoesNotExist:
-            pass
-
-        try:
-            max_length = User._meta.get_field('first_name').max_length
-            u.first_name = (u.first_name or '')[0:max_length]
-        except FieldDoesNotExist:
-            pass
-
+        for field in ['last_name',
+                      'first_name']:
+            if hasattr(u, field):
+                truncated_value = (user_field(u, field) or '') \
+                    [0:User._meta.get_field(field).max_length]
+                user_field(u, field, truncated_value)
         user_email(u, email or '')
         u.set_unusable_password()
         sociallogin.save(request)

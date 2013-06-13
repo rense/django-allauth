@@ -68,9 +68,6 @@ def create_oauth_tests(provider):
             resp = self.client.get(complete_url)
         return resp
 
-
-
-
     impl = { 'setUp': setUp,
              'login': login,
              'test_login': test_login,
@@ -79,6 +76,7 @@ def create_oauth_tests(provider):
     Class = type(class_name, (TestCase,), impl)
     Class.provider = provider
     return Class
+
 
 def create_oauth2_tests(provider):
 
@@ -120,9 +118,6 @@ def create_oauth2_tests(provider):
                                      'state': q['state'][0] })
         return resp
 
-
-
-
     impl = { 'setUp': setUp,
              'login': login,
              'test_login': test_login,
@@ -141,7 +136,7 @@ class SocialAccountTests(TestCase):
         ACCOUNT_EMAIL_VERIFICATION=account_settings.EmailVerificationMethod.NONE
     )
     def test_email_address_created(self):
-        factory = RequestFactory() 
+        factory = RequestFactory()
         request = factory.get('/accounts/login/callback/')
         request.user = AnonymousUser()
         SessionMiddleware().process_request(request)
