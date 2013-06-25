@@ -1,3 +1,4 @@
+
 try:
     from urllib.parse import urlparse, parse_qs
 except ImportError:
@@ -166,9 +167,6 @@ def create_oauth2_tests(provider):
                                      'state': q['state'][0] })
         return resp
 
-
-
-
     impl = { 'setUp': setUp,
              'login': login,
              'test_login': test_login,
@@ -189,7 +187,6 @@ class SocialAccountTests(TestCase):
         ACCOUNT_SIGNUP_FORM_CLASS=None,
         ACCOUNT_EMAIL_VERIFICATION=account_settings.EmailVerificationMethod.NONE
     )
-
     def test_email_address_created(self):
         factory = RequestFactory()
         request = factory.get('/accounts/login/callback/')
